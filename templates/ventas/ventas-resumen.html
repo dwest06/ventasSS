@@ -17,12 +17,12 @@ Resumen Ventas
 				<div class="card-body">
 					<h5 class="card-title">Ventas Totales</h5>
 					<p class="card-text">{{ ventas_total }}</p>
-				  </div>
+				</div>
 			</div>
 		</div>
 
 		<div class="col-md-6 text-center">
-			<a href="#">
+			<a href="{% url 'ventas:realizar-venta' %}">
 				<div class="btn btn-primary btn-large">
 					<i class="zmdi zmdi-plus"></i> Realizar Venta
 				</div>
@@ -113,7 +113,7 @@ $(document).ready( function () {
 				method: "POST",
 				data: {'pk' : $(this).attr('data-pk'), 'csrfmiddlewaretoken': '{{csrf_token}}'},
 				success: function(a){
-					console.log(a[productos]);
+					console.log(a);
 				},
 				error:function(e){
 					console.log(e);

@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+<style>
+  .mtb10{
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col md 12">
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">
+            <h3>Realizar Venta</h3>
+          </div>
+
+          <form action="" method="POST">
+            {% csrf_token %}
+            <!-- HEADER DEL NOMBRE Y LA FECHA -->
+            <div class="row">
+
+              <div class="col">
+                <h4 style="display: inline; padding-right: 10px;"><b>Vendedor: </b></h4> 
+                <span> {{ request.user|capfirst }}</span>
+              </div>
+
+              <div class="col">
+                <div class="form-group">
+                  <div class="input-group date" id="datetimepicker1">
+                    <input type="text" class="form-control" placeholder="Fecha" name="datetime"/>
+                    <span class="input-group-addon">
+                      <i class="far fa-calendar-alt"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <br>
+
+            <!-- SECCION DE PRODUCTO -->
+            <div class="row">
+              <div class="col-md-4">
+                <h3>Productos</h3>
+              </div>
+              <div class="offset-md-4 col-md-4 text-center">
+                <div class="btn btn-primary" id="agregar-producto">Agregar</div>
+              </div>
+            </div>
+            <br>
+            <div id="seccion-productos">
+              <div class="card" id="producto1" style="padding: 10px;">
+                <div class="row">
+                  <div class="col-md-1 mtb10 text-center">
+                    <h3 class="id-producto">1</h3>
+                  </div>
+                  <div class="col-md-4 mtb10">
+                    <select name="producto" class="custom-select producto-select" data-id="producto1">
+                        <option value="">Selecciona un producto</option>
+                        {% for p in productos %}
+                          <option value="{{ p.pk }}">{{ p.nombre }}</option>
+                        {% endfor %}
+                      </select>
+                  </div>
+                  <div class="col-md-1 mtb10">
+                    <span class="precio-producto">0.00</span>$
+                  </div>
+                  <div class="col-md-2 mtb10 ">
+                    <select name="color" class="custom-select color"></select>
+                  </div>
+                  <div class="col-md-2 mtb10 d-none">
+                    <select name="sabor" class="custom-select sabor"></select>
+                  </div>
+                  <div class="col-md-3 mtb10">
+                    <div class=" row">
+                      <div class="col-md-6">
+                        <label for="cantidad1">Cantidad</label>
+                      </div>
+                      <div class="col-md-5">
+                        <input class="form-control cant-producto" type="number" name="cantidad" min="1" value="1">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-1 mtb10 text-center">
+                    <div class="btn btn-danger eliminar-producto" data-id="1">
+                      <i class="fas fa-times"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TOTAL -->
+            <div class="row">
+              <div class="offset-md-8 col-md-4">
+                <h4 style="display: inline;">Total: </h4>
+                <span id="total">0.00</span>
+              </div>
+            </div>
+            <br>
+
+            <!-- SUBMIT -->
+            <div class="row">
+              <div class="offset-md-4 col-md-4 text-center">
+                <button class="btn btn-success" type="submit">Realizar Venta</button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  // Variables globales
+
+  let countProductos = 2;
+  let total = 0.00;
+  // Funciones 
+
+  let addProducto = () => {
+    let producto = $('#seccion-productos')
+    let cProducto = 'producto' + countProductos.toString()
+
+    let newProducto = producto.children().first().clone()
+
+    // Cambiamos el id del producto
+    newProducto.attr('id', cProducto)
+    newProducto.find(".id-producto").text(countProductos)
+
+    // Cambiamos el id del select
+    newProducto.find(".producto-select").attr('data-id', cProducto)
+
+    // Cambiamos el data-id del boton de eliminar
+    newProducto.find(".eliminar-producto").attr("data-id", countProductos)
+
+    // Lo appendeamos al div principal
+    producto.append(newProducto);
+
+    actualizarTotal()
+
+    // Subimos la cuenta de Producto
+    countProductos++;
+  }
+
+  let eliminarProducto = (p) => {
+    // Eliminar el producto actual
+    let cProducto = 'producto' + p.toString();
+    let productos = $('#seccion-productos')
+
+    // Bajamos la cantidad de productos
+    countProductos--;
+
+    // Actualizar los todos los elementos siguientes
+    actualizarElementos(cProducto);
+
+    // Finalmente se elimina el elemento seleccionado
+    productos.find("#" + cProducto).remove();
+    
+    // Actualizamos el total
+    actualizarTotal();
+  }
+
+  let actualizarElementos = (p) => {
+    let id;
+    let psig = $('#seccion-productos').find("#" + p).next()
+    if(psig.is('div')){
+      let pnuevo = psig.attr('id');
+      // Llamamos a actualizaElementos con el id de psig
+      actualizarElementos(pnuevo)
+
+      // Actualizamos la info
+
+      // Cambiamos el id 
+      psig.attr('id', p);
+      // Cambiamos el numero
+      psig.find(".id-producto").text(p[p.length - 1]);
+      // Cambiamos id select
+      psig.find(".producto-select").attr('data-id', p);
+      // Cambiamos boton eliminar
+      psig.find(".eliminar-producto").attr("data-id", p[p.length - 1]);
+    }
+  }
+
+  let actualizarTotal = () => {
+    total = 0.00;
+    $('#seccion-productos').children().toArray().forEach((elem) => {
+      let precio = $(elem).find('.precio-producto').text();
+      let cantidad = $(elem).find('.cant-producto').val();
+      total += precio * cantidad;
+    });
+    $("#total").text(total);
+  }
+
+  // Funcion Main
+  function main(){
+    $('#agregar-producto').on('click', () => {addProducto()});
+
+    $(document).on('click', '.eliminar-producto', function(){ 
+      eliminarProducto($(this).attr('data-id')); 
+    });
+
+    $(document).on('change', '.cant-producto', () => {
+      actualizarTotal();
+    });
+
+    // 
+    $(document).on('change', '.producto-select',function(){
+      // Funcion para cambiar el precio del producto
+      let cambiarPrecio = (a, total) => {
+        let name = $(a).attr('data-id')
+        console.log(name, total)
+        $('#' + name).find('.precio-producto').text(total)
+      }
+
+      // Obtenemos el pk del producto seleccionado
+      let a = $(this).children("option:selected").val();
+
+      // Buscamos el precio del producto
+      $.ajax({
+        url: "{% url 'ventas:obtener-producto-info' %}",
+        method: "POST",
+        data:{
+          "pk" : a,  'csrfmiddlewaretoken': '{{csrf_token}}'
+        },
+        success: (total) => {
+          console.log(total['precio'])
+          cambiarPrecio(this,total['precio'])
+          actualizarTotal();
+        },
+        error: (e) => {
+          console.log("Ha ocurrido un Error", e)
+        }
+      });
+
+      
+    });
+  }
+
+  $(document).ready(main());
+</script>
+{% endblock %}
+
+
