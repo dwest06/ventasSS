@@ -6,22 +6,30 @@ Resumen Ventas
 {% endblock title %}
 
 {% block estilos %}
+<style>
+</style>
 {% endblock estilos %}
 
 {% block content %}
 
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-6">
-			<div class="card">
+<div class="container-fluid mb-100">
+	<div class="row" style="display: flex; align-items: center; margin-bottom: 30px">
+		<div class="col">
+			<div class="card" style="margin-bottom: 0px">
 				<div class="card-body">
-					<h5 class="card-title">Ventas Totales</h5>
-					<p class="card-text">{{ ventas_total }}</p>
+					<div class="row" >
+						<div class="col"style="display:flex; justify-content: center;">
+							<h5 class="" style="display:flex; align-items:center">Ventas Totales</h5>
+						</div>
+						<div class="col" style="display:flex">
+							<p class="" style="display:flex; align-items:center">{{ ventas_total }}</p>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="col-md-6 text-center">
+		<div class="col" style="display: flex; justify-content: center">
 			<a href="{% url 'ventas:realizar-venta' %}">
 				<div class="btn btn-primary btn-large">
 					<i class="zmdi zmdi-plus"></i> Realizar Venta
@@ -38,41 +46,43 @@ Resumen Ventas
 				<div class="card-title">
 					<h3>Resumen de Ventas</h3>
 				</div>
-				<table class="table table-hover w-full" id="resumen-ventas">
-					<thead>
-						<tr>
-							<th scope="col">ID</th>
-							<th scope="col">Fecha</th>
-							<th scope="col">Productos Vendidos</th>
-							<th scope="col">Vendido por</th>
-							<th scope="col">Total</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for venta in ventas %}
-						<tr>
-							<td>
-								{{venta.pk}}
-							</td>
-							<td>
-								{{venta.fecha}}
-							</td>
-							<td>
-								<button class="btn btn-primary ver-productos" data-pk="{{venta.pk}}" data-toggle="modal" data-target="#modal-ver-productos">
-									Ver Productos
-								</button>
-							</td>
-							<td>
-								{{venta.vendido_por}}
-							</td>
-							<td>
-								{{venta.total}}
-							</td>
-						</tr>
-						{% endfor %}
-					</tbody>
+				<div class="card-body" style="overflow-x: scroll">
+					<table class="table table-hover w-full" id="resumen-ventas">
+						<thead>
+							<tr>
+								<th scope="col">ID</th>
+								<th scope="col">Fecha</th>
+								<th scope="col">Productos Vendidos</th>
+								<th scope="col">Vendido por</th>
+								<th scope="col">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for venta in ventas %}
+							<tr>
+								<td>
+									{{venta.pk}}
+								</td>
+								<td>
+									{{venta.fecha}}
+								</td>
+								<td>
+									<button class="btn btn-primary ver-productos" data-pk="{{venta.pk}}" data-toggle="modal" data-target="#modal-ver-productos">
+										Ver Productos
+									</button>
+								</td>
+								<td>
+									{{venta.vendedor}}
+								</td>
+								<td>
+									{{venta.total}}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
 
-				</table>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -89,8 +99,10 @@ Resumen Ventas
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body">
-					
+				<div class="modal-body" >
+					<ul class="list-group list-group-flush" id="modal-productos">
+						
+					</ul>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -113,7 +125,11 @@ $(document).ready( function () {
 				method: "POST",
 				data: {'pk' : $(this).attr('data-pk'), 'csrfmiddlewaretoken': '{{csrf_token}}'},
 				success: function(a){
-					console.log(a);
+					let productos = $('#modal-productos').empty();
+					for(x of a['productos']){
+						let elem = $('<div></div>').addClass("list-group-item").text(x)
+						productos.append(elem)
+					}
 				},
 				error:function(e){
 					console.log(e);

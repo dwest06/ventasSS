@@ -46,6 +46,11 @@
 	.card-pad{
 		padding: 20px;
 	}
+	@media (max-width: 600px) {
+		.mb-100 {
+			margin-bottom: 100px;
+		}
+	}
 	</style>
 	{% block estilos %}
 	
@@ -95,7 +100,7 @@
 	</script>
 	
 	<!-- DataTable -->
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="{% static 'js/main.js' %}" ></script> 
 
 	<!-- DateTimePicker 

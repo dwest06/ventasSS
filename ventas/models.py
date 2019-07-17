@@ -28,7 +28,7 @@ class Color(models.Model):
 class Producto(models.Model):
     nombre = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=200, blank=True)
-    precio = models.DecimalField(max_digits=5, decimal_places=2)
+    precio = models.FloatField()
     foto = models.ImageField(upload_to='productos/', blank=True)
     marca = models.CharField(max_length=50)
     clase = models.CharField(max_length=50,choices=PRODUCTO_CLASES)
@@ -39,12 +39,18 @@ class Producto(models.Model):
 
 class Stock(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, on_delete=models.CASCADE, blank=True)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, blank=True, null=True)
     cantidad = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        if self.color:
+            return self.producto.nombre + " " + self.color.color
+        else:
+            return self.producto.nombre
 
 class Venta(models.Model):
     productos = models.ManyToManyField(Stock)
-    total = models.DecimalField(max_digits=5, decimal_places=2)
+    total = models.FloatField()
     fecha = models.DateTimeField(auto_now=False, auto_now_add=False)
     vendedor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
@@ -53,12 +59,12 @@ class Venta(models.Model):
 
 
 class Caja(models.Model):
-    bolivares = models.DecimalField(max_digits=5, decimal_places=2)
-    efectivo = models.DecimalField(max_digits=5, decimal_places=2)
-    cash = models.DecimalField(max_digits=5, decimal_places=2)
-    bofa = models.DecimalField(max_digits=5, decimal_places=2)
-    uphold = models.DecimalField(max_digits=5, decimal_places=2)
+    bolivares = models.FloatField(default=0)
+    efectivo = models.FloatField(default=0)
+    cash = models.FloatField(default=0)
+    bofa = models.FloatField(default=0)
+    uphold = models.FloatField(default=0)
+    cambio_dolar = models.FloatField(default=0)
     
     def __str__(self):
-        return "Caja del %s" % str(self.fecha)
-    
+        return "Caja"

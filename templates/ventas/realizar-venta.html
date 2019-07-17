@@ -6,12 +6,35 @@
     margin-top: 10px;
     margin-bottom: 10px;
   }
+  .p-10{
+    padding: 10px;
+  }
+  .mb-10{
+    margin-bottom: 10px;
+  }
 </style>
 {% endblock %}
 
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid mb-100">
+  <div class="row">
+    <div class="col">
+        {% if messages %}
+          {% for message in messages %}
+          	{% if message.tags == 'error' %}
+            	<div class="alert alert-danger">
+            		{{message}}
+          		</div>
+          	{% else %}
+	            <div class="alert alert-{{ message.tags }}">
+	              {{message}}
+	            </div>
+	          {% endif %}
+          {% endfor %}
+        {% endif %}
+    </div>
+  </div>
   <div class="row">
     <div class="col md 12">
       <div class="card">
@@ -33,10 +56,10 @@
               <div class="col">
                 <div class="form-group">
                   <div class="input-group date" id="datetimepicker1">
-                    <input type="text" class="form-control" placeholder="Fecha" name="datetime"/>
-                    <span class="input-group-addon">
+                    <input id="myDate" type="date" class="form-control" placeholder="Fecha" name="datetime"/>
+                    <label for="datetime" class="input-group-addon">
                       <i class="far fa-calendar-alt"></i>
-                    </span>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -64,7 +87,7 @@
                     <select name="producto" class="custom-select producto-select" data-id="producto1">
                         <option value="">Selecciona un producto</option>
                         {% for p in productos %}
-                          <option value="{{ p.pk }}">{{ p.nombre }}</option>
+                          <option value="{{ p.pk }}">{{ p }}</option>
                         {% endfor %}
                       </select>
                   </div>
@@ -72,10 +95,7 @@
                     <span class="precio-producto">0.00</span>$
                   </div>
                   <div class="col-md-2 mtb10 ">
-                    <select name="color" class="custom-select color"></select>
-                  </div>
-                  <div class="col-md-2 mtb10 d-none">
-                    <select name="sabor" class="custom-select sabor"></select>
+                    <p>Disponible: <span class="cantidad-disponible">0</span></p>
                   </div>
                   <div class="col-md-3 mtb10">
                     <div class=" row">
@@ -96,6 +116,7 @@
               </div>
             </div>
 
+
             <!-- TOTAL -->
             <div class="row">
               <div class="offset-md-8 col-md-4">
@@ -105,6 +126,53 @@
             </div>
             <br>
 
+            <!-- METODO DE PAGO -->
+            <div class="row">
+              <div class="col">
+                <h3>Metodo de Pago</h3>
+              </div>
+            </div>
+            <br> 
+            <div class="card p-10" >
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-10">
+                    <label for="bolivares">Bolivares</label>
+                    <input type="number" min=0 step="0.01" name="bolivares" class="form-control" value="0">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-10">
+                    <label for="efectivo">Efectivo</label>
+                    <input type="number" min=0 step="0.01" name="efectivo" class="form-control" value="0">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-10">
+                    <label for="cash">Cash</label>
+                    <input type="number" min=0 step="0.01" name="cash" class="form-control" value="0">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-10">
+                    <label for="zelle">Zelle</label>
+                    <input type="number" min=0 step="0.01" name="zelle" class="form-control" value="0">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-10">
+                    <label for="uphold">Uphold</label>
+                    <input type="number" min=0 step="0.01" name="uphold" class="form-control" value="0">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-10">
+                      <label for="uphold">Precio Dolar</label>
+                      <input type="number" min=0 step="0.01" name="Dolar" class="form-control" value="{{caja.cambio_dolar}}">
+                    </div>
+                  </div>
+              </div>
+            </div>
             <!-- SUBMIT -->
             <div class="row">
               <div class="offset-md-4 col-md-4 text-center">
@@ -202,25 +270,48 @@
     $("#total").text(total);
   }
 
+  let actualizarFecha = () =>{
+    let date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    if(day < 10) {
+      day = '0'+ day;
+    } 
+
+    if(month < 10) {
+      month = '0'+ month;
+    } 
+    let today = year + '-' + month + '-' + day;
+    document.getElementById("myDate").value = today;
+  }
   // Funcion Main
   function main(){
+    // Inicializar el datetimepicker
+    actualizarFecha();
+
     $('#agregar-producto').on('click', () => {addProducto()});
 
     $(document).on('click', '.eliminar-producto', function(){ 
       eliminarProducto($(this).attr('data-id')); 
     });
-
+    
+    // Actualizar precio cuando se cambia de producto
     $(document).on('change', '.cant-producto', () => {
       actualizarTotal();
     });
 
-    // 
+    // Cambiar info del prodcuto cuando se selecciona
     $(document).on('change', '.producto-select',function(){
       // Funcion para cambiar el precio del producto
       let cambiarPrecio = (a, total) => {
         let name = $(a).attr('data-id')
-        console.log(name, total)
         $('#' + name).find('.precio-producto').text(total)
+      }
+
+      let cambiarDisponible = (a, cantidad) =>{
+        let name = $(a).attr('data-id')
+        $('#' + name).find('.cantidad-disponible').text(cantidad)
       }
 
       // Obtenemos el pk del producto seleccionado
@@ -234,8 +325,11 @@
           "pk" : a,  'csrfmiddlewaretoken': '{{csrf_token}}'
         },
         success: (total) => {
-          console.log(total['precio'])
-          cambiarPrecio(this,total['precio'])
+          // Cabiamos el precio del producto
+          cambiarPrecio(this, total['precio'])
+          // Cambiamos la disponibilidad
+          cambiarDisponible(this, total['disponible'])
+          // Actualizamos el Total global
           actualizarTotal();
         },
         error: (e) => {

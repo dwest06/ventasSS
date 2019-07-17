@@ -1,16 +1,14 @@
 from django import forms
 from .models import *
 
-class VentaForm(forms.Form):
-    
+class ProveedorForm(forms.ModelForm):
 
-
-    """
     class Meta:
-        model = Venta
-        fields = ('productos', 'total', 'fecha', 'vendido_por')
+        model = Proveedor
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-        super(VentaForm, self).__init__(*args, **kwargs)
-        print('En el init del form')
-    """
+        super(ProveedorForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+    

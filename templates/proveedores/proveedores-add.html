@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+<style>
+.p-20{
+  padding: 20px;
+}
+.mb-10{
+  margin-bottom: 10px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mb-100">
+
+  <!-- MENSAJES  -->
+    <div class="row">
+        <div class="col">
+            {% if messages %}
+              {% for message in messages %}
+                {% if message.tags == 'error' %}
+                  <div class="alert alert-danger">
+                    {{message}}
+                  </div>
+                {% else %}
+                  <div class="alert alert-{{ message.tags }}">
+                    {{message}}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+        </div>
+      </div>
+
+  <div class="row">
+    <div class="offset-md-3 col-md-6 col-sm-12">
+      <div class="card p-20">
+        <form action="" method="POST" class="form-group">
+            {% csrf_token %}
+            {{ form }}
+            <br>
+            <div class="row text-center">
+              <div class="col">
+                <button type="submit" class="btn btn-success">Agregar</button>
+              </div>
+              <div class="col">
+                <button class="btn btn-danger">Cancelar</button>
+              </div>
+            </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+  let main = () => {
+    $('#egresoDe').on('change', function(){
+      let moneda = $('#egresoDe option:selected').val()
+      if(moneda == 'bolivares' || moneda == 'efectivo'){
+        $('#tagdolarEgreso').removeClass('d-none')
+        $('#dolarEgreso').removeClass('d-none')
+      }
+      else{
+        $('#tagdolarEgreso').addClass('d-none')
+        $('#dolarEgreso').addClass('d-none')
+      }
+
+    });
+
+    $('#cambioDe').on('change', function(){
+      let moneda = $('#cambioDe option:selected').val()
+      if(moneda == 'bolivares' || moneda == 'efectivo'){
+        $('#tagdolarMovimiento').removeClass('d-none')
+        $('#dolarMovimiento').removeClass('d-none')
+      }
+      else{
+        $('#tagdolarMovimiento').addClass('d-none')
+        $('#dolarMovimiento').addClass('d-none')
+      }
+    });
+
+    $('#cambioPara').on('change', function(){
+      let moneda = $('#cambioPara option:selected').val()
+      if(moneda == 'bolivares' || moneda == 'efectivo'){
+        $('#dolarMovimiento').removeClass('d-none')
+      }
+      else{
+        $('#dolarMovimiento').addClass('d-none')
+      }
+    });
+  }
+  $(document).ready(main())
+</script>
+{% endblock %}

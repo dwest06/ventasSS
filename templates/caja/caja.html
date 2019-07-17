@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block estilos %}
+<style>
+.p-20{
+  padding: 20px;
+}
+.mb-10{
+  margin-bottom: 10px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mb-100">
+    <div class="row">
+        <div class="col">
+            {% if messages %}
+              {% for message in messages %}
+                {% if message.tags == 'error' %}
+                  <div class="alert alert-danger">
+                    {{message}}
+                  </div>
+                {% else %}
+                  <div class="alert alert-{{ message.tags }}">
+                    {{message}}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+        </div>
+      </div>
+  <div class="row">
+    <div class="col">
+      <div class="card p-20">
+        <div class="row">
+            <div class="col-md-4">
+              <div class="mb-10 text-center">
+                <h4>Bolivares</h4>
+                <p>{{ caja.bolivares }}</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-10 text-center">
+                <h4>Efectivo</h4>
+                <p>{{ caja.efectivo }}</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-10 text-center">
+                <h4>Cash</h4>
+                <p>{{ caja.cash }}</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-10 text-center">
+                <h4>Zelle</h4>
+                <p>{{ caja.bofa }}</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-10 text-center">
+                <h4>Uphold</h4>
+                <p>{{ caja.uphold }}</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-10 text-center">
+                <h4>Total</h4>
+                <p>{{ total }}</p>
+              </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row">
+          <div class="col mb-10" style="display:flex; justify-content: center">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#modalCambioCaja">
+              Realizar Movimiento
+            </button>
+          </div>
+          <div class="col mb-10" style="display:flex; justify-content: center">
+            <button class="btn btn-warning" data-toggle="modal" data-target="#modalEgresoCaja">
+              Realizar Egreso
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAMBIO -->
+<div class="modal fade" id="modalCambioCaja" tabindex="-1" role="dialog" aria-labelledby="ModalCaja" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Cambio de Caja</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" method="POST" class="form-group">
+        {% csrf_token %}
+        <input type="hidden" name="tipo" value="movimiento">
+        <div class="modal-body">
+          <select name="cambioDe" id="cambioDe" class="form-control mb-10">
+            <option value="bolivares">Bolivares - {{caja.bolivares}} </option>
+            <option value="efectivo">Efectivo - {{caja.efectivo}} </option>
+            <option value="cash">Cash - {{caja.cash}} </option>
+            <option value="bofa">Zelle - {{caja.bofa}} </option>
+            <option value="uphold">Uphold - {{caja.uphold}} </option>
+          </select>
+          <p class="mb-10">Hacia</p>
+          <select name="cambioPara" id="cambioPara" class="form-control mb-10">
+            <option value="bolivares">Bolivares - {{caja.bolivares}} </option>
+            <option value="efectivo">Efectivo - {{caja.efectivo}} </option>
+            <option value="cash">Cash - {{caja.cash}} </option>
+            <option value="bofa">Zelle - {{caja.bofa}} </option>
+            <option value="uphold">Uphold - {{caja.uphold}} </option>
+          </select>
+          <p class="mb-10">Cantidad:</p>
+          <input type="number" name="cantidad" min="0" placeholder="0.00" step="0.01" class="form-control mb-10">
+          <p class="mb-10" id="tagdolarMovimiento">Valor del dolar:</p>
+          <input type="number" id="dolarMovimiento" name="valorDolar" class="form-control" placeholder="Valor del $" value="{{caja.cambio_dolar}}">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Realizar Cambio</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EGRESO -->
+<div class="modal fade" id="modalEgresoCaja" tabindex="-1" role="dialog" aria-labelledby="ModalEgreso" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Egreso de Caja</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" method="POST" class="form-group">
+        {% csrf_token %}
+        <input type="hidden" name="tipo" value="egreso">
+        <div class="modal-body">
+          <select name="egresoDe" id="egresoDe" class="form-control mb-10">
+            <option value="bolivares">Bolivares - {{caja.bolivares}} </option>
+            <option value="efectivo">Efectivo - {{caja.efectivo}} </option>
+            <option value="cash">Cash - {{caja.cash}} </option>
+            <option value="bofa">Zelle - {{caja.bofa}} </option>
+            <option value="uphold">Uphold - {{caja.uphold}} </option>
+          </select>
+          <p class="mb-10">Cantidad:</p>
+          <input type="number" name="cantidad" min="0" placeholder="0.00" step="0.01" class="form-control mb-10">
+          <p class="mb-10" id="tagdolarEgreso">Valor del dolar:</p>
+          <input type="number" id="dolarEgreso" name="valorDolar" class="form-control" placeholder="Valor del $" value="{{caja.cambio_dolar}}">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Realizar Egreso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+  let main = () => {
+    $('#egresoDe').on('change', function(){
+      let moneda = $('#egresoDe option:selected').val()
+      if(moneda == 'bolivares' || moneda == 'efectivo'){
+        $('#tagdolarEgreso').removeClass('d-none')
+        $('#dolarEgreso').removeClass('d-none')
+      }
+      else{
+        $('#tagdolarEgreso').addClass('d-none')
+        $('#dolarEgreso').addClass('d-none')
+      }
+
+    });
+
+    $('#cambioDe').on('change', function(){
+      let moneda = $('#cambioDe option:selected').val()
+      if(moneda == 'bolivares' || moneda == 'efectivo'){
+        $('#tagdolarMovimiento').removeClass('d-none')
+        $('#dolarMovimiento').removeClass('d-none')
+      }
+      else{
+        $('#tagdolarMovimiento').addClass('d-none')
+        $('#dolarMovimiento').addClass('d-none')
+      }
+    });
+
+    $('#cambioPara').on('change', function(){
+      let moneda = $('#cambioPara option:selected').val()
+      if(moneda == 'bolivares' || moneda == 'efectivo'){
+        $('#dolarMovimiento').removeClass('d-none')
+      }
+      else{
+        $('#dolarMovimiento').addClass('d-none')
+      }
+    });
+  }
+  $(document).ready(main())
+</script>
+{% endblock %}
