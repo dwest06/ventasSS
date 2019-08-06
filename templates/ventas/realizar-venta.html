@@ -122,6 +122,7 @@
               <div class="offset-md-8 col-md-4">
                 <h4 style="display: inline;">Total: </h4>
                 <span id="total">0.00</span>
+                <input type="hidden" name="total" id="input-total" value="">
               </div>
             </div>
             <br>
@@ -176,7 +177,8 @@
             <!-- SUBMIT -->
             <div class="row">
               <div class="offset-md-4 col-md-4 text-center">
-                <button class="btn btn-success" type="submit">Realizar Venta</button>
+                <div class="btn btn-success" id="verificacion-button">Realizar Venta</div>
+                <button type="submit" class="d-none" id="submit-button"></button>
               </div>
             </div>
           </form>
@@ -186,6 +188,25 @@
     </div>
   </div>
 </div>
+
+<!-- MENSAJE DE ERROR DE VERIFICACION DE PAGO -->
+
+<div class="modal" tabindex="-1" role="dialog" id="verificacion">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="verificacion-text">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block script %}
@@ -268,6 +289,7 @@
       total += precio * cantidad;
     });
     $("#total").text(total);
+    $("#input-total").val(total)
   }
 
   let actualizarFecha = () =>{
@@ -285,6 +307,32 @@
     let today = year + '-' + month + '-' + day;
     document.getElementById("myDate").value = today;
   }
+  
+  let verificar_pago = () => {
+    let bolivares = parseFloat($('input[name="bolivares"').val())
+    let efectivo = parseFloat($('input[name="efectivo"').val())
+    let cash = parseFloat($('input[name="cash"').val())
+    let zelle = parseFloat($('input[name="zelle"').val())
+    let uphold = parseFloat($('input[name="uphold"').val())
+    let dolar = parseFloat($('input[name="Dolar"').val())
+
+    let total = parseFloat($('input[name="total"').val())
+    let total_pago = cash + zelle + uphold + (bolivares/dolar) + (efectivo/dolar)
+    
+    if (total > total_pago){
+      $("#verificacion-text").text("Pago insuficiente.");
+      $('#verificacion').modal('show');
+    }
+    else if( total < total_pago){
+      $("#verificacion-text").text("Pago mayor al total.");
+      $('#verificacion').modal('show');
+    }
+    else{
+      $("#submit-button").click()
+    }
+  }
+
+
   // Funcion Main
   function main(){
     // Inicializar el datetimepicker
@@ -339,6 +387,11 @@
 
       
     });
+    
+    // Verificacion de Pago
+    $("#verificacion-button").on('click', ()=>{
+      verificar_pago();
+    })
   }
 
   $(document).ready(main());

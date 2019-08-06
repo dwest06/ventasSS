@@ -9,6 +9,8 @@ PRODUCTO_CLASES = (
     ('R', 'Resistencia'),
 )
 
+PRODUCTO_CLASES_DICT = dict(PRODUCTO_CLASES)
+
 class Proveedor(models.Model):
     nombre = models.CharField(max_length=50)
     empresa = models.CharField(max_length=50)
@@ -32,7 +34,7 @@ class Producto(models.Model):
     foto = models.ImageField(upload_to='productos/', blank=True)
     marca = models.CharField(max_length=50)
     clase = models.CharField(max_length=50,choices=PRODUCTO_CLASES)
-    proveedor = models.ManyToManyField(Proveedor)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.nombre

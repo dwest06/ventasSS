@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block estilos %}
+<style>
+.p-20{
+  padding: 20px;
+}
+.mb-10{
+  margin-bottom: 10px;
+}
+.df{
+  display: flex;
+}
+.flex-d{
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mb-100">
+
+  <!-- MENSAJES  -->
+  <div class="row">
+    <div class="col">
+        {% if messages %}
+          {% for message in messages %}
+            {% if message.tags == 'error' %}
+              <div class="alert alert-danger">
+                {{message}}
+              </div>
+            {% else %}
+              <div class="alert alert-{{ message.tags }}">
+                {{message}}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+    </div>
+  </div>
+
+  <!-- TITULO -->
+  <div class="row">
+    <div class="col">
+      <h2 style="margin-left: 20px">
+        Productos
+        {% if filtro %}
+          {{filtro}}
+        {% endif %}
+      </h2>
+    </div>
+  </div>
+  <br>
+  <!-- HEAD -->
+
+  <div class="row" style="display: flex; align-items: center; margin-bottom: 30px">
+    <div class="col">
+      <div class="card" style="margin-bottom: 0px">
+        <div class="card-body">
+          <div class="row" >
+            <div class="col df" style="justify-content: center;">
+              <h5 class="" style="display:flex; align-items:center">Productos Totales</h5>
+            </div>
+            <div class="col df" >
+              <p class="" style="display:flex; align-items:center">{{ producto_total }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col df" style="justify-content: center">
+      <div class="card" style="margin-bottom: 0px">
+        <div class="card-body">
+          <div class="row">
+            <div class="col df" >
+              <p>Filtrar por:</p>
+            </div>
+
+            <div class="col df">
+              <form action="" method="GET">
+                <select name="filtro" id="filtro" class="form-control">
+                  <option value="">Selecciona filtro</option>
+                  <option value="">Todos</option>
+                  {% for i, j in clases.items %}  
+                  <option value="{{i}}">{{j}}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="d-none" id="boton-filtro"></button>
+              </form>
+            </div>
+          </div>
+            
+        </div>
+      </div>
+    </div>
+
+    <div class="col df flex-d">
+
+      <a href="{% url 'ventas:stock-add' %}">
+        <div class="btn btn-dark">
+          <i class="zmdi zmdi-plus"></i> Añadir Stock
+        </div>
+      </a>
+      <a href="{% url 'ventas:producto-add' %}">
+        <div class="btn btn-primary ">
+          <i class="zmdi zmdi-plus"></i> Añadir Producto
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+
+  <div class="row">
+
+    
+    {% for stock in productos %}  
+    <div class="col-md-4">
+      <div class="card text-center">
+        
+        {% if stock.producto.foto %}
+        <img class="card-img-top" src="{{stock.producto.foto.url}}" alt="{{producto.nombre}}">
+        {% endif %}
+        
+        <div class="card-body">
+          <h5 class="card-title">{{ stock.producto.nombre}}</h5>
+          <p class="card-text">
+            <p>{{stock.producto.descripcion}}</p>
+            <p><strong>Cantidad:</strong> {{stock.cantidad}}</p>
+            {% if stock.color %}
+              <p><strong>Color:</strong> {{stock.color}}</p>
+            {% endif %}
+          </p>
+          <br>
+          <div class="row">
+            <div class="col mb-10">
+              <a href="{% url 'ventas:stock-editar' stock.pk %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-pencil-alt"></i>Editar
+              </a>
+            </div>
+            <div class="col mb-10">
+              <div class="btn btn-danger btn-sm eliminar-producto" data-toggle="modal" data-target="#modalEliminar" data-pk="{{stock.pk}}">
+                <i class="fas fa-trash"></i>Eliminar
+              </div>
+            </div>
+            <div class="col mb-10">
+                <div class="btn btn-dark btn-sm addstock" data-toggle="modal" data-target="#modalAñadirStock" data-pk="{{stock.pk}}">
+                  <i class="zmdi zmdi-plus"></i>Add
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+      
+
+  </div>
+</div>   
+
+<!-- MODAL ELIMINAR -->
+<div class="modal fade" id="modalEliminar" tabindex="-1" role="dialog" aria-labelledby="ModalEliminar" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">¿Está seguro que quiere eliminarlo?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'ventas:stock-delete' %}" method="POST" class="form-group">
+        {% csrf_token %}
+        <input type="hidden" name="stock" id="producto-eliminar" value="">
+        <div class="modal-body">
+          <p>¿Desea eliminar el producto <span id="producto-eliminar-nombre"></span>?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Eliminarlo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AÑADIR STOCK -->
+<div class="modal fade" id="modalAñadirStock" tabindex="-1" role="dialog" aria-labelledby="ModalAñadirStock" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Añadir Cantidad al Stock</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <form action="{% url 'ventas:add-stock' %}" method="POST" class="form-group">
+          {% csrf_token %}
+          <input type="hidden" name="stock" id="producto-addstock" value="">
+          <div class="modal-body">
+            <p>Cantidad:</p>
+            <input type="number" name="cantidad" class="form-control">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Agregar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+  let main = () => {
+    
+    $('#filtro').on('change', function(){
+      console.log(this.value)
+      $('#boton-filtro').click()
+    });
+
+    // Para eliminar un proveedor
+    $('.eliminar-producto').on('click', function(){
+      let pk = $(this).attr('data-pk');
+      $('#producto-eliminar').val(pk)
+    });
+
+    // Para agregar stock
+    $('.addstock').on('click', function(){
+      let pk = $(this).attr('data-pk');
+      $('#producto-addstock').val(pk)
+    })
+  }
+  $(document).ready(main())
+</script>
+{% endblock %}

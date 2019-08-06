@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block estilos %}
+<style>
+.p-20{
+  padding: 20px;
+}
+.mb-10{
+  margin-bottom: 10px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mb-100">
+
+  <!-- MENSAJES  -->
+  <div class="row">
+    <div class="col">
+        {% if messages %}
+          {% for message in messages %}
+            {% if message.tags == 'error' %}
+              <div class="alert alert-danger">
+                {{message}}
+              </div>
+            {% else %}
+              <div class="alert alert-{{ message.tags }}">
+                {{message}}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h2 style="margin-left: 20px">
+        {% if editar %}
+          Editar Producto
+        {% else %}
+          Añadir Producto
+        {% endif %}
+      </h2>
+    </div>
+  </div>
+  <br>
+
+  <!-- MAIN -->
+
+  <div class="row">
+    <div class="offset-md-3 col-md-6 col-sm-12">
+      <div class="card p-20">
+        <form action="" method="POST" class="form-group">
+          {% csrf_token %}
+          {% if editar %}
+            <input type="hidden" name="pk" value="{{pk}}">
+          {% endif %}
+          {{ form }}
+          <br>
+          <div class="row text-center">
+            <div class="col">
+              <button type="submit" class="btn btn-success">
+              {% if editar %}
+                Editar 
+              {% else %}
+                Agregar
+              {% endif %}
+              </button>
+            </div>
+            <div class="col">
+              <div class="btn btn-danger">Cancelar</div>
+            </div>
+            <div class="col">
+              <div class="btn btn-primary" data-toggle="modal" data-target="#modalColor">
+                Add Color
+              </div>
+            </div>
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+
+</div>   
+
+<!-- MODAL COLOR -->
+<div class="modal fade" id="modalColor" tabindex="-1" role="dialog" aria-labelledby="ModalColor" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Agregar Color</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'ventas:color-add' %}" method="POST" class="form-group">
+        {% csrf_token %}
+        <div class="modal-body">
+          <input type="text" name="color" id="input-color" placeholder="Ingresa el nombre del Color" class="form-control">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Agregarlo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+  let main = () => {
+  }
+  $(document).ready(main())
+</script>
+{% endblock %}

@@ -13,10 +13,15 @@
 
 	<!-- Title Page-->
 	<title>{% block title %}{% endblock title %}</title>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" href="{% static 'favicon.jpg' %}" type="image/x-icon"/>
+
 	<!-- Fontfaces CSS-->
 	<link href="{% static 'css/font-face.css' %}" rel="stylesheet" media="all">
 	<link href="{% static 'vendor/font-awesome-4.7/css/font-awesome.min.css' %}" rel="stylesheet" media="all">
 	<link href="{% static 'vendor/font-awesome-5/css/fontawesome-all.min.css' %}" rel="stylesheet" media="all">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
 	<link href="{% static 'vendor/mdi-font/css/material-design-iconic-font.min.css' %}" rel="stylesheet" media="all">
 
 	<!-- Bootstrap CSS-->
@@ -46,7 +51,7 @@
 	.card-pad{
 		padding: 20px;
 	}
-	@media (max-width: 600px) {
+	@media (max-width: 992px) {
 		.mb-100 {
 			margin-bottom: 100px;
 		}
@@ -64,10 +69,10 @@
 
 		<!-- PAGE CONTAINER-->
 		<div class="page-container">
-			<!-- HEADER DESKTOP -->
-			{% include "header.html" %}
+			<!-- HEADER DESKTOP 
+			{% include "header.html" %} -->
 			<!-- HEADER DESKTOP-->
-			<div class="main-content">
+			<div class="main-content" style="padding-top: 30px;">
 			<!-- MAIN CONTENT-->
 			{% block content %}
 			{% endblock content %}

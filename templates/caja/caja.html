@@ -2,74 +2,76 @@
 
 {% block estilos %}
 <style>
-.p-20{
-  padding: 20px;
-}
-.mb-10{
-  margin-bottom: 10px;
-}
+  .p-20 {
+    padding: 20px;
+  }
+
+  .mb-10 {
+    margin-bottom: 10px;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mb-100">
-    <div class="row">
-        <div class="col">
-            {% if messages %}
-              {% for message in messages %}
-                {% if message.tags == 'error' %}
-                  <div class="alert alert-danger">
-                    {{message}}
-                  </div>
-                {% else %}
-                  <div class="alert alert-{{ message.tags }}">
-                    {{message}}
-                  </div>
-                {% endif %}
-              {% endfor %}
-            {% endif %}
-        </div>
+  <!-- MENSAJES -->
+  <div class="row">
+    <div class="col">
+      {% if messages %}
+      {% for message in messages %}
+      {% if message.tags == 'error' %}
+      <div class="alert alert-danger">
+        {{message}}
       </div>
+      {% else %}
+      <div class="alert alert-{{ message.tags }}">
+        {{message}}
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
   <div class="row">
     <div class="col">
       <div class="card p-20">
         <div class="row">
-            <div class="col-md-4">
-              <div class="mb-10 text-center">
-                <h4>Bolivares</h4>
-                <p>{{ caja.bolivares }}</p>
-              </div>
+          <div class="col-md-4">
+            <div class="mb-10 text-center">
+              <h4>Bolivares</h4>
+              <p>{{ caja.bolivares }} Bs</p>
             </div>
-            <div class="col-md-4">
-              <div class="mb-10 text-center">
-                <h4>Efectivo</h4>
-                <p>{{ caja.efectivo }}</p>
-              </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-10 text-center">
+              <h4>Efectivo</h4>
+              <p>{{ caja.efectivo }} Bs</p>
             </div>
-            <div class="col-md-4">
-              <div class="mb-10 text-center">
-                <h4>Cash</h4>
-                <p>{{ caja.cash }}</p>
-              </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-10 text-center">
+              <h4>Cash</h4>
+              <p>{{ caja.cash }} $</p>
             </div>
-            <div class="col-md-4">
-              <div class="mb-10 text-center">
-                <h4>Zelle</h4>
-                <p>{{ caja.bofa }}</p>
-              </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-10 text-center">
+              <h4>Zelle</h4>
+              <p>{{ caja.bofa }} $</p>
             </div>
-            <div class="col-md-4">
-              <div class="mb-10 text-center">
-                <h4>Uphold</h4>
-                <p>{{ caja.uphold }}</p>
-              </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-10 text-center">
+              <h4>Uphold</h4>
+              <p>{{ caja.uphold }} $</p>
             </div>
-            <div class="col-md-4">
-              <div class="mb-10 text-center">
-                <h4>Total</h4>
-                <p>{{ total }}</p>
-              </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-10 text-center">
+              <h4>Total</h4>
+              <p>{{ total }} $</p>
             </div>
+          </div>
         </div>
         <br>
         <br>
@@ -122,7 +124,8 @@
           <p class="mb-10">Cantidad:</p>
           <input type="number" name="cantidad" min="0" placeholder="0.00" step="0.01" class="form-control mb-10">
           <p class="mb-10" id="tagdolarMovimiento">Valor del dolar:</p>
-          <input type="number" id="dolarMovimiento" name="valorDolar" class="form-control" placeholder="Valor del $" value="{{caja.cambio_dolar}}">
+          <input type="number" id="dolarMovimiento" name="valorDolar" class="form-control" placeholder="Valor del $"
+            value="{{caja.cambio_dolar}}">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -134,7 +137,8 @@
 </div>
 
 <!-- MODAL EGRESO -->
-<div class="modal fade" id="modalEgresoCaja" tabindex="-1" role="dialog" aria-labelledby="ModalEgreso" aria-hidden="true">
+<div class="modal fade" id="modalEgresoCaja" tabindex="-1" role="dialog" aria-labelledby="ModalEgreso"
+  aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -157,7 +161,8 @@
           <p class="mb-10">Cantidad:</p>
           <input type="number" name="cantidad" min="0" placeholder="0.00" step="0.01" class="form-control mb-10">
           <p class="mb-10" id="tagdolarEgreso">Valor del dolar:</p>
-          <input type="number" id="dolarEgreso" name="valorDolar" class="form-control" placeholder="Valor del $" value="{{caja.cambio_dolar}}">
+          <input type="number" id="dolarEgreso" name="valorDolar" class="form-control" placeholder="Valor del $"
+            value="{{caja.cambio_dolar}}">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -173,38 +178,51 @@
 <script>
 
   let main = () => {
-    $('#egresoDe').on('change', function(){
+    // De egreso
+    $('#egresoDe').on('change', function () {
       let moneda = $('#egresoDe option:selected').val()
-      if(moneda == 'bolivares' || moneda == 'efectivo'){
+      if (moneda == 'bolivares' || moneda == 'efectivo') {
         $('#tagdolarEgreso').removeClass('d-none')
         $('#dolarEgreso').removeClass('d-none')
       }
-      else{
+      else {
         $('#tagdolarEgreso').addClass('d-none')
         $('#dolarEgreso').addClass('d-none')
       }
 
     });
 
-    $('#cambioDe').on('change', function(){
+    // MOVIMIENTO DE
+    $('#cambioDe').on('change', function () {
       let moneda = $('#cambioDe option:selected').val()
-      if(moneda == 'bolivares' || moneda == 'efectivo'){
+      let para = $('#cambioPara option:selected').val()
+      console.log('DE: ', moneda)
+      if (moneda == 'bolivares' || moneda == 'efectivo') {
         $('#tagdolarMovimiento').removeClass('d-none')
         $('#dolarMovimiento').removeClass('d-none')
       }
-      else{
-        $('#tagdolarMovimiento').addClass('d-none')
-        $('#dolarMovimiento').addClass('d-none')
+      else {
+        if (para != 'bolivares' && para != 'efectivo'){
+          $('#tagdolarMovimiento').addClass('d-none')
+          $('#dolarMovimiento').addClass('d-none')
+        }
       }
     });
 
-    $('#cambioPara').on('change', function(){
+    // MOVIMIENTO PARA
+    $('#cambioPara').on('change', function () {
       let moneda = $('#cambioPara option:selected').val()
-      if(moneda == 'bolivares' || moneda == 'efectivo'){
+      let de = $('#cambioDe option:selected').val()
+      console.log('PARA: ', moneda)
+      if (moneda == 'bolivares' || moneda == 'efectivo') {
+        $('#tagdolarMovimiento').removeClass('d-none')
         $('#dolarMovimiento').removeClass('d-none')
       }
-      else{
-        $('#dolarMovimiento').addClass('d-none')
+      else {
+        if (de != 'bolivares' && de != 'efectivo'){
+          $('#tagdolarMovimiento').addClass('d-none')
+          $('#dolarMovimiento').addClass('d-none')
+        }
       }
     });
   }
