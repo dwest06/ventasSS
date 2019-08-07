@@ -1,0 +1,20 @@
+[
+	{
+		"model": "auth.user", 
+		"pk": 1, 
+		"fields": {
+			"password": "pbkdf2_sha256$150000$fCYgDC2yV21e$Jat0rJpEuFiNtI8oCYjm6SK7vUcnOqbJLe2cTVngqXc=", 
+			"last_login": "2019-08-06T02:22:00.488Z", 
+			"is_superuser": true, 
+			"username": "david", 
+			"first_name": "", 
+			"last_name": "", 
+			"email": "david@david.com", 
+			"is_staff": true, 
+			"is_active": true, 
+			"date_joined": "2019-08-06T02:21:36.820Z", 
+			"groups": [], 
+			"user_permissions": []
+		}
+	}
+]
