@@ -127,13 +127,22 @@
         {% endif %}
         
         <div class="card-body">
-          <h5 class="card-title">{{ stock.producto.nombre}}</h5>
+          <h5 class="card-title">{{ stock.producto.marca }} - {{ stock.producto.nombre}}</h5>
           <p class="card-text">
             <p>{{stock.producto.descripcion}}</p>
             <p><strong>Cantidad:</strong> {{stock.cantidad}}</p>
             {% if stock.color %}
               <p><strong>Color:</strong> {{stock.color}}</p>
             {% endif %}
+
+            {% if stock.producto.clase == "Es" %}
+              {% if stock.nicotina %}
+                <p><strong>Nicotina:</strong> 3mg</p>
+              {% else %}
+                <p><strong>Nicotina:</strong> 0mg</p>
+              {% endif %}
+            {% endif %}
+
           </p>
           <br>
           <div class="row">

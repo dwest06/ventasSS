@@ -361,12 +361,21 @@ def stock_add(request, *args, **kwargs):
     else:
         form =StockForm(request.POST)
         if form.is_valid():
-            pprint(form.cleaned_data)
             producto = form.cleaned_data['producto']
             cantidad = form.cleaned_data['cantidad']
             color = form.cleaned_data['color']
+            nicotina = form.cleaned_data['nicotina']
 
-            stock, status = Stock.objects.get_or_create(producto = producto, color = color)
+            if producto.clase == 'Es':
+                # Verificamos que nicotina no sea null
+                if nicotina is None:
+                    messages.error(request, "Por favor indique si el producto posee nicotina o no")
+                    return redirect(request.path_info)
+                
+                stock, status = Stock.objects.get_or_create(producto = producto, color = color, nicotina = nicotina)
+
+            else:
+                stock, status = Stock.objects.get_or_create(producto = producto, color = color)
             if status:
                 stock.cantidad = int(cantidad)
                 stock.save()

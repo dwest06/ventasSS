@@ -34,7 +34,7 @@ class Producto(models.Model):
     foto = models.ImageField(upload_to='productos/', blank=True)
     marca = models.CharField(max_length=50)
     clase = models.CharField(max_length=50,choices=PRODUCTO_CLASES)
-    proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, null=True)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.nombre
@@ -42,6 +42,7 @@ class Producto(models.Model):
 class Stock(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     color = models.ForeignKey(Color, on_delete=models.CASCADE, blank=True, null=True)
+    nicotina = models.BooleanField(blank=True, null=True)
     cantidad = models.PositiveIntegerField(default=0)
 
     def __str__(self):
