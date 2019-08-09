@@ -117,7 +117,9 @@ Resumen Ventas
 {% block script %}
 <script>
 $(document).ready( function () {
-		$('#resumen-ventas').DataTable();
+		$('#resumen-ventas').DataTable({
+			"order" : [[0,"desc"]]
+		});
 		
 		$('.ver-productos').on('click', function(){
 			$.ajax({

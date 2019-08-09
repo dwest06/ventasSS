@@ -122,7 +122,7 @@
               <div class="offset-md-8 col-md-4">
                 <h4 style="display: inline;">Total: </h4>
                 <span id="total">0.00</span>
-                <input type="hidden" name="total" id="input-total" value="">
+                <input type="hidden" name="total" id="input-total" value="0">
               </div>
             </div>
             <br>
@@ -176,9 +176,12 @@
             </div>
             <!-- SUBMIT -->
             <div class="row">
-              <div class="offset-md-4 col-md-4 text-center">
+              <div class="col text-center">
                 <div class="btn btn-success" id="verificacion-button">Realizar Venta</div>
                 <button type="submit" class="d-none" id="submit-button"></button>
+              </div>
+              <div class="col text-center">
+                <div class="btn btn-danger" onClick="javascript:history.go(-1);">Cancelar</div>
               </div>
             </div>
           </form>
@@ -318,8 +321,13 @@
 
     let total = parseFloat($('input[name="total"').val())
     let total_pago = cash + zelle + uphold + (bolivares/dolar) + (efectivo/dolar)
-    
-    if (total > total_pago){
+
+    // Si el total es 0
+    if (total == 0){
+      $("#verificacion-text").text("No hay productos seleccionado.");
+      $('#verificacion').modal('show');
+    }
+    else if (total > total_pago){
       $("#verificacion-text").text("Pago insuficiente.");
       $('#verificacion').modal('show');
     }

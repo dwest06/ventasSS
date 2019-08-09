@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 PRODUCTO_CLASES = (
     ('Eq', 'Equipo'),
     ('Es', 'Esencia'),
-    ('R', 'Resistencia'),
+    ('R', 'Accesorios'),
 )
 
 PRODUCTO_CLASES_DICT = dict(PRODUCTO_CLASES)

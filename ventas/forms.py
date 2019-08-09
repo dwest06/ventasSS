@@ -10,8 +10,10 @@ class ProveedorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProveedorForm, self).__init__(*args, **kwargs)
+        self.fields['instagram'].label = 'Instagram o Link'
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
+            pprint(visible.field.__dict__)
 
 class ProductoForm(forms.ModelForm):
 
