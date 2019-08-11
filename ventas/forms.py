@@ -23,6 +23,9 @@ class ProductoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProductoForm, self).__init__(*args, **kwargs)
+        #self.fields['foto'].widget.attrs.update({
+        #    'enctype': 'multipart/form-data'
+        #})
         for visible in self.visible_fields():
             if visible.field.label == 'Foto':
                 visible.field.widget.attrs['class'] = 'form-control-file mb-10'

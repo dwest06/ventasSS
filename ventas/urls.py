@@ -34,4 +34,4 @@ urlpatterns = [
     # Color
     path('producto/color/add', color_add, name="color-add")
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+#urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

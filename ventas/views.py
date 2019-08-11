@@ -45,7 +45,7 @@ def obtener_productos(request, *args, **kwargs):
         productos = []
         venta = Venta.objects.get(pk=pk)
         for i in venta.productos.all():
-            productos.append(str(i))
+            productos.append(str(i) + ' ...... cant: ' + str(i.cantidad_compra))
         data = {
             "productos" : productos
         }
@@ -115,9 +115,10 @@ def realizar_venta(request):
         # Agregamos la Venta
         for i,j in zip(stocks, cantidades):
             stock = Stock.objects.get(pk = i)
+            ventastock = VentaStock.objects.create(producto=stock, cantidad_compra=j)
             stock.cantidad -= int(j)
             total += float(stock.producto.precio) * float(j)
-            venta.productos.add(stock)
+            venta.productos.add(ventastock)
             stock.save()
         venta.total = total
         venta.save()
@@ -283,7 +284,20 @@ def proveedor_delete(request, *args, **kwargs):
 """
 @login_required
 def producto(request, *args, **kwargs):
-    return redirect('ventas:stock')
+    if request.method == 'GET':
+        filtro = request.GET.get('filtro')
+        if filtro:
+            producto = Producto.objects.filter(clase = filtro)
+        else:
+            producto = Producto.objects.all()
+        context = {
+            'productos' : producto, 
+            'producto_total' : producto.count(),
+            'clases' : PRODUCTO_CLASES_DICT,
+            'filtro' : PRODUCTO_CLASES_DICT.get(filtro)
+        }
+        return render(request, 'producto/producto.html', context)
+    return redirect('ventas:producto')
 
 @login_required
 def producto_add(request, *args, **kwargs):
@@ -291,7 +305,7 @@ def producto_add(request, *args, **kwargs):
         form = ProductoForm()
         return render(request, 'producto/producto-add.html', {'form': form})
     else:
-        form = ProductoForm(request.POST)
+        form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, "Se ha agregado el producto exitosamente")
@@ -323,9 +337,9 @@ def producto_editar(request, *args, **kwargs):
 def producto_delete(request, *args, **kwargs):
     if request.method == "POST":
         pk = request.POST.get('producto')
-        stock = Stock.objects.get(pk=pk)
-        nombre = str(stock)
-        stock.delete()
+        producto = Producto.objects.get(pk=pk)
+        nombre = str(producto)
+        producto.delete()
         messages.success(request,'Porducto ' + nombre + ' eliminado exitosamente' )
     
     return redirect('ventas:producto')

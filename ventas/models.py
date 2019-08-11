@@ -51,8 +51,15 @@ class Stock(models.Model):
         else:
             return self.producto.nombre
 
+class VentaStock(models.Model):
+    producto = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    cantidad_compra = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return str(self.producto)
+
 class Venta(models.Model):
-    productos = models.ManyToManyField(Stock)
+    productos = models.ManyToManyField(VentaStock)
     total = models.FloatField()
     fecha = models.DateTimeField(auto_now=False, auto_now_add=False)
     vendedor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -67,7 +74,21 @@ class Caja(models.Model):
     cash = models.FloatField(default=0)
     bofa = models.FloatField(default=0)
     uphold = models.FloatField(default=0)
-    cambio_dolar = models.FloatField(default=0)
+    cambio_dolar = models.FloatField(default=1)
     
     def __str__(self):
         return "Caja"
+
+class ProductoPedido(models.Model):
+    nombre = models.CharField(max_length=50)
+    precio = models.FloatField(default=0)
+    descripcion = models.CharField(max_length=100, blank=True)
+
+class Pedido(models.Model):
+    fecha = models.DateTimeField(auto_now=False, auto_now_add=False)
+    imagen = models.ImageField(upload_to='pedidos/', blank=True)
+    descripcion = models.CharField(max_length=200)
+    total = models.FloatField(default=0)
+    productos = models.ManyToManyField(ProductoPedido)
+    def __str__(self):
+        return 'Pedido del %s' % str(self.fecha)
