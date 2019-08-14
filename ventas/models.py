@@ -47,7 +47,13 @@ class Stock(models.Model):
 
     def __str__(self):
         if self.color:
-            return self.producto.nombre + " " + self.color.color
+            return self.producto.nombre + " - " + self.color.color
+
+        elif self.nicotina is not None:
+            if self.nicotina:
+                return self.producto.nombre + ' - 3mg'
+            else:
+                return self.producto.nombre + ' - 0mg' 
         else:
             return self.producto.nombre
 

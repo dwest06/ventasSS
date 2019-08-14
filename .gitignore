@@ -140,3 +140,5 @@ venv/
 deletemigrations.sh
 
 CoolAdmin-master
+
+media/
