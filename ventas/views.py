@@ -215,8 +215,8 @@ def caja_info(request, *args, **kwargs):
                 
         else:
             de = request.POST.get('egresoDe')
-            cantidad = request.POST.get('cantidad')
-            dolar = request.POST.get('valorDolar')
+            cantidad = float(request.POST.get('cantidad'))
+            dolar = float(request.POST.get('valorDolar'))
             if de == 'bolivares' or de == 'efectivo':
                 egresar_de(de, cantidad)
             else:
