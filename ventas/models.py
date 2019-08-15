@@ -85,6 +85,18 @@ class Caja(models.Model):
     def __str__(self):
         return "Caja"
 
+class FlujoCaja(models.Model):
+    ACCIONES = (
+        ('M', 'Movimiento'),
+        ('E', 'Egreso'),
+    )
+    fecha = models.DateTimeField(auto_now=False, auto_now_add=False)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    accion = models.CharField(max_length=10, choices=ACCIONES)
+    de = models.CharField(max_length=10)
+    para = models.CharField(max_length=10, blank=True)
+    cantidad = models.FloatField(default=0)
+
 class ProductoPedido(models.Model):
     nombre = models.CharField(max_length=50)
     precio = models.FloatField(default=0)

@@ -3,9 +3,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from usuarios.forms import LoginForm
 from django.core import serializers
-from decimal import Decimal
+from datetime import datetime
+
+from usuarios.forms import LoginForm
 from .models import *
 from .forms import *
 
@@ -154,7 +155,8 @@ def caja_info(request, *args, **kwargs):
         caja = Caja.objects.all().first()
         total = (caja.bolivares / caja.cambio_dolar) + (caja.efectivo / caja.cambio_dolar)
         total += caja.bofa + caja.cash + caja.uphold
-        return render(request, 'caja/caja.html', {'caja' : caja, 'total' : round(total,2) })
+        flujos = FlujoCaja.objects.all()
+        return render(request, 'caja/caja.html', {'caja' : caja, 'total' : round(total,2), 'flujos' : flujos })
     else:
         accion = request.POST.get('tipo')
         caja = Caja.objects.all().first()
@@ -212,6 +214,16 @@ def caja_info(request, *args, **kwargs):
                 caja.cambio_dolar = dolar
 
             caja.save()
+
+            # Creamos la bitacora del Movimiento
+            flujo = FlujoCaja.objects.create(
+                fecha = datetime.now(), 
+                user = request.user,
+                accion = accion,
+                de = de,
+                para = para,
+                cantidad = cantidad
+            )
                 
         else:
             de = request.POST.get('egresoDe')
@@ -226,6 +238,15 @@ def caja_info(request, *args, **kwargs):
             if dolar != caja.cambio_dolar and dolar != None:
                 caja.cambio_dolar = dolar
             caja.save()
+
+            # Creamos la bitacora del Movimiento
+            flujo = FlujoCaja.objects.create(
+                fecha = datetime.now(), 
+                user = request.user,
+                accion = accion,
+                de = de,
+                cantidad = cantidad
+            )
 
     messages.success(request, "Cambio realizado Exitosamente")
     return redirect('ventas:caja')

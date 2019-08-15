@@ -90,6 +90,48 @@
       </div>
     </div>
   </div>
+
+
+  <!-- REGISTRO DE MOVIMIENTOS DE CAJA -->
+
+  <div class="row">
+    <div class="col">
+      <div class="card p-20">
+        <div class="card-title">
+          <h3>Registro de Movimientos de Caja</h3>
+        </div>
+        <div class="card-body" style="overflow-x: scroll">
+          <table class="table table-hover w-full" id="registro-caja">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Responsable</th>
+                <th scope="col">Accion</th>
+                <th scope="col">De</th>
+                <th scope="col">Para</th>
+                <th scope="col">Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for flujo in flujos %}
+              <tr>
+                <td>{{flujo.pk}}</td>
+                <td>{{flujo.fecha}}</td>
+                <td>{{flujo.user}}</td>
+                <td>{{flujo.accion}}</td>
+                <td>{{flujo.de}}</td>
+                <td>{{flujo.para}}</td>
+                <td>{{flujo.cantidad}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL CAMBIO -->
@@ -178,6 +220,10 @@
 <script>
 
   let main = () => {
+    // Datatable registro de movimiento
+    $('#registro-caja').DataTable({
+      "order" : [[0,"desc"]]
+    });
     // De egreso
     $('#egresoDe').on('change', function () {
       let moneda = $('#egresoDe option:selected').val()
