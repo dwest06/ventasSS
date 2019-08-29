@@ -481,7 +481,51 @@ def addstock(request, *args, **kwargs):
     
     return redirect('ventas:producto')
 
-"""
+@login_required
+def stocktext(request, **kwargs):
+
+    def listaEquipo():
+        stock = Stock.objects.filter(producto__clase = 'Eq').exclude(cantidad = 0).order_by('producto__marca')
+        productos = []
+        for s in stock:
+            productos.append(
+                "%s - %s - %s$ - %s" % (s.producto.marca, s.producto.nombre, s.producto.precio, s.color)
+            )
+        return productos
+    
+    def listaEsencias():
+        stock = Stock.objects.filter(producto__clase = 'Es').exclude(cantidad = 0).order_by('producto__marca')
+        productos = []
+
+        for s in stock:
+            productos.append(
+                "%s - %s %s - %s - %s$" % (s.producto.marca, s.producto.nombre, "3mg" if s.nicotina else "0mg", s.producto.descripcion, s.producto.precio)
+            )
+        return productos
+
+    def listaAccesorios():
+        stock = Stock.objects.filter(producto__clase = 'R').exclude(cantidad = 0).order_by('producto__marca')
+        productos = []
+
+        for s in stock:
+            productos.append(
+                "%s - %s - %s$" % (s.producto.marca, s.producto.nombre, s.producto.precio)
+            )
+        return productos
+
+
+    if request.method == 'GET':
+        filtro = request.GET.get('filtro')
+        # Dividimos por filtro por el formato de entrega del ajax
+        if filtro == PRODUCTO_CLASES_DICT['Eq']: 
+            return JsonResponse({ 'text': listaEquipo() })
+        elif filtro == PRODUCTO_CLASES_DICT['Es']: 
+            return JsonResponse({ 'text': listaEsencias() })
+        elif filtro == PRODUCTO_CLASES_DICT['R']: 
+            return JsonResponse({ 'text': listaAccesorios() })
+        else: 
+            return JsonResponse({ 'text':  listaEquipo() + listaEsencias() + listaAccesorios() })
+""" 
 
     COLOR
 

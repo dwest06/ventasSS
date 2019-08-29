@@ -31,6 +31,7 @@ urlpatterns = [
     path('stock/add', stock_add, name="stock-add"),
     path('stock/editar/<int:pk>', stock_editar, name="stock-editar"),
     path('stock/delete', stock_delete, name="stock-delete"),
+    path('stock/text', stocktext, name="stock-text"),
     # Color
     path('producto/color/add', color_add, name="color-add")
 ]

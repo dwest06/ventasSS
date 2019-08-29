@@ -52,6 +52,13 @@
         {% endif %}
       </h2>
     </div>
+    <!-- INPUT HIDDEN FOR FILTRO -->
+    <input type="hidden" name="filtro-input" id="filtro-input" value="{% if filtro %}{{filtro}}{% endif %}">
+    <div class="col">
+      <button class="btn btn-info" data-toggle="modal" data-target="#stocktext" id="stock-t">
+        Stock Text
+      </button>
+    </div>
   </div>
   <br>
   <!-- HEAD -->
@@ -198,30 +205,56 @@
 
 <!-- MODAL AÑADIR STOCK -->
 <div class="modal fade" id="modalAñadirStock" tabindex="-1" role="dialog" aria-labelledby="ModalAñadirStock" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Añadir Cantidad al Stock</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Añadir Cantidad al Stock</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
 
-        <form action="{% url 'ventas:add-stock' %}" method="POST" class="form-group">
-          {% csrf_token %}
-          <input type="hidden" name="stock" id="producto-addstock" value="">
-          <div class="modal-body">
-            <p>Cantidad:</p>
-            <input type="number" name="cantidad" class="form-control">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-success">Agregar</button>
-          </div>
-        </form>
+      <form action="{% url 'ventas:add-stock' %}" method="POST" class="form-group">
+        {% csrf_token %}
+        <input type="hidden" name="stock" id="producto-addstock" value="">
+        <div class="modal-body">
+          <p>Cantidad:</p>
+          <input type="number" name="cantidad" class="form-control">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Agregar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- STOCK TEXT -->
+
+<div class="modal fade" id="stocktext" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Stock Text</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <textarea cols="40" id="stocktext-body" ></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="boton-copiar"
+          data-toggle="popover" data-placement="top" data-content="Copiado!">
+          Copiar Texto
+        </button>
       </div>
     </div>
   </div>
+</div>
 
 {% endblock %}
 
@@ -235,7 +268,7 @@
       $('#boton-filtro').click()
     });
 
-    // Para eliminar un proveedor
+    // Para eliminar un producto
     $('.eliminar-producto').on('click', function(){
       let pk = $(this).attr('data-pk');
       $('#producto-eliminar').val(pk)
@@ -246,6 +279,40 @@
       let pk = $(this).attr('data-pk');
       $('#producto-addstock').val(pk)
     })
+
+    // Para hacer la llamada sobre los productos disponibles solo en texto
+    $('#stock-t').on('click', () => {
+      let filtro = $('#filtro-input').val()
+      console.log(filtro)
+      $.ajax({
+        url: "{% url 'ventas:stock-text' %}",
+        data: {
+          filtro: filtro,
+        },
+        success: (response) => {
+          let input = $('#stocktext-body').attr('rows', response.text.length + 2)
+          let text = ""
+          for(const i of response.text){
+            text += '* ' + i + '\n'
+          }
+          input.val(text)
+        }
+      });
+    });
+
+
+    $('#boton-copiar').on('click', () => {
+      /* Get the text field */
+      var copyText = document.getElementById("stocktext-body");
+
+      /* Select the text field */
+      copyText.select(); 
+      copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+      /* Copy the text inside the text field */
+      document.execCommand("copy");
+
+    });
   }
   $(document).ready(main())
 </script>
